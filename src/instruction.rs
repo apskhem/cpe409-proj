@@ -1,5 +1,7 @@
 use std::ops::RangeInclusive;
 
+use crate::common::ErrMsg;
+
 #[derive(PartialEq, Eq)]
 pub enum Opcode {
   /// R-type
@@ -21,7 +23,7 @@ pub enum Opcode {
 }
 
 impl Opcode {
-  fn convert_raw(raw_code: u32) -> Result<Opcode, String> {
+  fn convert_raw(raw_code: u32) -> Result<Opcode, ErrMsg> {
     match raw_code {
       0b000 => Ok(Opcode::Add),
       0b001 => Ok(Opcode::Nand),
@@ -46,7 +48,7 @@ pub struct Instruction {
 }
 
 impl TryFrom<u32> for Instruction {
-  type Error = String;
+  type Error = ErrMsg;
 
   fn try_from(raw: u32) -> Result<Self, Self::Error> {
     let raw_code = get_bin_range(raw, 22..=24);
@@ -65,8 +67,10 @@ impl TryFrom<u32> for Instruction {
 }
 
 fn get_bin_range(raw: u32, range: RangeInclusive<i32>) -> u32 {
-  let sll = 32 - (range.start() + 1);
-  let srl = sll + range.end();
+  let sll = 32 - (range.end() + 1);
+  let srl = sll + range.start();
 
-  (raw << sll) >> srl
+  raw
+    .wrapping_shl(sll as u32)
+    .wrapping_shr(srl as u32)
 }

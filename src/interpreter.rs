@@ -1,10 +1,13 @@
-use crate::{state::State, instruction::{Instruction, Opcode}};
+use crate::state::State;
+use crate::instruction::{Instruction, Opcode};
+use crate::common::ErrMsg;
 
-pub fn interpret(state: State) -> Result<State, String> {
+pub fn interpret(state: State) -> Result<State, ErrMsg> {
   let State {
     mem,
     regs,
     pc,
+    counter,
     ..
   } = state;
 
@@ -28,6 +31,7 @@ pub fn interpret(state: State) -> Result<State, String> {
         mem,
         regs: regs.write(rd as usize, rs1_val + rs2_val),
         pc: pc + 1,
+        counter: counter + 1,
         opcode: Some(next_opcode)
       }
     },
@@ -36,6 +40,7 @@ pub fn interpret(state: State) -> Result<State, String> {
         mem,
         regs: regs.write(rd as usize, !(rs1_val & rs2_val)),
         pc: pc + 1,
+        counter: counter + 1,
         opcode: Some(next_opcode)
       }
     },
@@ -47,6 +52,7 @@ pub fn interpret(state: State) -> Result<State, String> {
         mem,
         regs: regs.write(rd as usize, new_val),
         pc: pc + 1,
+        counter: counter + 1,
         opcode: Some(next_opcode)
       }
     },
@@ -57,6 +63,7 @@ pub fn interpret(state: State) -> Result<State, String> {
         mem: mem.write(sw_idx as usize, regs.at(rs2 as usize)? as u32),
         regs,
         pc: pc + 1,
+        counter: counter + 1,
         opcode: Some(next_opcode)
       }
     },
@@ -67,6 +74,7 @@ pub fn interpret(state: State) -> Result<State, String> {
         mem,
         regs,
         pc: pc + 1 + op_pc,
+        counter: counter + 1,
         opcode: Some(next_opcode)
       }
     },
@@ -75,6 +83,7 @@ pub fn interpret(state: State) -> Result<State, String> {
         mem,
         regs: regs.write(rs2 as usize, pc + 1),
         pc: rs1_val,
+        counter: counter + 1,
         opcode: Some(next_opcode)
       }
     },
@@ -83,6 +92,7 @@ pub fn interpret(state: State) -> Result<State, String> {
         mem,
         regs,
         pc: pc + 1,
+        counter: counter + 1,
         opcode: Some(next_opcode)
       }
     },

@@ -1,5 +1,8 @@
 use std::env;
 
+use common::ErrMsg;
+
+mod common;
 mod instruction;
 mod interpreter;
 mod io;
@@ -7,10 +10,10 @@ mod simulator;
 mod state;
 mod store;
 
-const MEMORY_SIZE: usize = 65536;
-const REGISTER_COUNT: usize = 8;
+pub const MEMORY_SIZE: usize = 65536;
+pub const REGISTER_COUNT: usize = 8;
 
-fn main() -> Result<(), String> {
+fn main() -> Result<(), ErrMsg> {
   let args: Vec<String> = env::args().collect();
 
   match args.get(1) {
@@ -23,7 +26,7 @@ fn main() -> Result<(), String> {
       simulator::simulate(mem, regs)
     },
     None => {
-      Err("Need a source file to be executed.".into())
+      Err("Need a source file to be executed".into())
     }
   }
 }
