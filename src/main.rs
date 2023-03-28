@@ -16,17 +16,13 @@ pub const REGISTER_COUNT: usize = 8;
 fn main() -> Result<(), ErrMsg> {
   let args: Vec<String> = env::args().collect();
 
-  match args.get(1) {
-    Some(in_file_name) => {
+  args.get(1)
+    .ok_or_else(|| "Need a source file to be executed".into())
+    .and_then(|in_file_name| {
       let mem = store::Store::<u32>::new(MEMORY_SIZE);
       let regs = store::Store::<i32>::new(REGISTER_COUNT);
-        
-      let mem = io::load_memory(mem, in_file_name)?;
 
-      simulator::simulate(mem, regs)
-    },
-    None => {
-      Err("Need a source file to be executed".into())
-    }
-  }
+      io::load_memory(mem, in_file_name)
+        .and_then(|mem| simulator::simulate(mem, regs))
+    })
 }

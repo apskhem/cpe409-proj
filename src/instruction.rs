@@ -9,13 +9,13 @@ pub enum Opcode {
   /// R-type
   Nand,
   /// I-type
-  Lw,
+  LoadWord,
   /// I-type
-  Sw,
+  SaveWord,
   /// I-type
-  Beq,
+  BranchIfEqual,
   /// J-type
-  Jalr,
+  JumpAndLinkRegister,
   /// O-type
   Halt,
   /// O-type
@@ -27,10 +27,10 @@ impl Opcode {
     match raw_code {
       0b000 => Ok(Opcode::Add),
       0b001 => Ok(Opcode::Nand),
-      0b010 => Ok(Opcode::Lw),
-      0b011 => Ok(Opcode::Sw),
-      0b100 => Ok(Opcode::Beq),
-      0b101 => Ok(Opcode::Jalr),
+      0b010 => Ok(Opcode::LoadWord),
+      0b011 => Ok(Opcode::SaveWord),
+      0b100 => Ok(Opcode::BranchIfEqual),
+      0b101 => Ok(Opcode::JumpAndLinkRegister),
       0b110 => Ok(Opcode::Halt),
       0b111 => Ok(Opcode::Noop),
       _ => Err("Unknown instruction opcode".into())

@@ -26,7 +26,7 @@ pub fn simulate(mem: Store<u32>, regs: Store<i32>) -> Result<(), ErrMsg> {
       state.print()?;
 
       interpret(state)
-        .map(|state| state.sanitize_regs())
+        .map(State::sanitize_regs)
         .map_err(Some)
     }
   });

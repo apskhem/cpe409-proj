@@ -44,30 +44,31 @@ pub fn interpret(state: State) -> Result<State, ErrMsg> {
         opcode: Some(next_opcode)
       }
     },
-    Opcode::Lw => {
+    Opcode::LoadWord => {
       let lw_idx = rs1_val as i16 + offset;
-      let new_val = mem.at(lw_idx as usize)? as i32;
+      let mem_val = mem.at(lw_idx as usize)? as i32;
 
       State {
         mem,
-        regs: regs.write(rd as usize, new_val),
+        regs: regs.write(rs2 as usize, mem_val),
         pc: pc + 1,
         counter: counter + 1,
         opcode: Some(next_opcode)
       }
     },
-    Opcode::Sw => {
+    Opcode::SaveWord => {
       let sw_idx = rs1_val as i16 + offset;
+      let reg_val = regs.at(rs2 as usize)? as u32;
 
       State {
-        mem: mem.write(sw_idx as usize, regs.at(rs2 as usize)? as u32),
+        mem: mem.write(sw_idx as usize, reg_val),
         regs,
         pc: pc + 1,
         counter: counter + 1,
         opcode: Some(next_opcode)
       }
     },
-    Opcode::Beq => {
+    Opcode::BranchIfEqual => {
       let op_pc = if rs1_val == rs2_val { offset as i32 } else { 0 };
 
       State {
@@ -78,7 +79,7 @@ pub fn interpret(state: State) -> Result<State, ErrMsg> {
         opcode: Some(next_opcode)
       }
     },
-    Opcode::Jalr => {
+    Opcode::JumpAndLinkRegister => {
       State {
         mem,
         regs: regs.write(rs2 as usize, pc + 1),
